@@ -1,0 +1,313 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Heritage Explorer - Virasat Se Vikas Tak</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            min-height: 100vh; 
+            padding: 20px; 
+            color: #333;
+        }
+        header { 
+            text-align: center; 
+            color: white; 
+            margin-bottom: 40px; 
+            animation: fadeIn 1s ease-in;
+        }
+        header h1 { 
+            font-size: 2.8em; 
+            margin-bottom: 10px; 
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        header p { 
+            font-size: 1.3em; 
+            opacity: 0.9;
+        }
+        .cards-container { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
+            gap: 25px; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
+        .card { 
+            background: rgba(255,255,255,0.95); 
+            border-radius: 20px; 
+            overflow: hidden; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2); 
+            transition: all 0.4s ease; 
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+        .card:hover { 
+            transform: translateY(-12px) scale(1.02); 
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        }
+        .card img { 
+            width: 100%; 
+            height: 220px; 
+            object-fit: cover; 
+        }
+        .card-content { 
+            padding: 25px; 
+            text-align: center;
+        }
+        .card h3 { 
+            font-size: 1.6em; 
+            margin-bottom: 15px; 
+            color: #2c3e50;
+        }
+        .card p { 
+            color: #7f8c8d; 
+            margin-bottom: 20px;
+        }
+        .explore-btn { 
+            width: 100%; 
+            padding: 15px 30px; 
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e); 
+            color: white; 
+            border: none; 
+            border-radius: 50px; 
+            font-size: 1.1em; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(255,107,107,0.4);
+        }
+        .explore-btn:hover { 
+            background: linear-gradient(45deg, #ff5252, #ff6b6b); 
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255,107,107,0.6);
+        }
+
+        .modal { 
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.85); 
+            backdrop-filter: blur(5px);
+        }
+        .modal-content { 
+            background: rgba(255,255,255,0.98); 
+            margin: 5% auto; 
+            padding: 0; 
+            border-radius: 20px; 
+            width: 90%; 
+            max-width: 900px; 
+            max-height: 90vh; 
+            overflow-y: auto; 
+            position: relative; 
+            box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+            animation: modalSlide 0.4s ease-out;
+        }
+        .close { 
+            position: absolute; 
+            right: 25px; 
+            top: 20px; 
+            font-size: 35px; 
+            cursor: pointer; 
+            color: #95a5a6; 
+            font-weight: bold;
+            transition: color 0.3s;
+            z-index: 1001;
+        }
+        .close:hover { color: #e74c3c; }
+        #modal-body { 
+            padding: 50px 40px 40px; 
+        }
+        #modal-body h2 { 
+            color: #2c3e50; 
+            margin-bottom: 25px; 
+            font-size: 2.2em;
+            text-align: center;
+        }
+        #modal-body .story { 
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); 
+            padding: 30px; 
+            border-radius: 15px; 
+            margin-bottom: 25px; 
+            line-height: 1.7; 
+            font-size: 1.15em;
+            border-left: 5px solid #3498db;
+        }
+        .impact { 
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%); 
+            padding: 25px 30px; 
+            border-radius: 15px; 
+            margin-bottom: 25px; 
+            border-left: 5px solid #28a745;
+        }
+        .impact strong { color: #155724; }
+        
+        .streetview-container {
+            margin: 25px 0;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .streetview-label {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .streetview-iframe {
+            width: 100%;
+            height: 400px;
+            border: none;
+            border-radius: 0 0 15px 15px;
+        }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes modalSlide { from { opacity: 0; transform: scale(0.8) translateY(-50px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        
+        @media (max-width: 768px) { 
+            .cards-container { grid-template-columns: 1fr; gap: 20px; }
+            header h1 { font-size: 2.2em; }
+            #modal-body { padding: 40px 25px 25px; }
+            .streetview-iframe { height: 300px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🕌 Digital Heritage Explorer</h1>
+        <p><strong>Virasat Se Vikas Tak</strong> - Lucknow's Heritage in Digital Age</p>
+    </header>
+
+    <div class="cards-container">
+        <!-- Bara Imambara -->
+        <div class="card" data-site="bara-imambara">
+            <img src="images/free-photo-of-bda-imambara.webp" alt="Bara Imambara">
+            <div class="card-content">
+                <h3>🏛️ Bara Imambara</h3>
+                <p>World's largest unsupported hall built in 1784</p>
+                <button class="explore-btn">Explore Heritage →</button>
+            </div>
+        </div>
+        
+        <!-- Chota Imambara -->
+        <div class="card" data-site="chota-imambara">
+            <img src="images/Chota-Imambara-Lucknow-attractions-1024x683.webp" alt="Chota Imambara">
+            <div class="card-content">
+                <h3>✨ Chota Imambara</h3>
+                <p>Palace of Lights - Persian Architectural Marvel</p>
+                <button class="explore-btn">Explore Heritage →</button>
+            </div>
+        </div>
+        
+        <!-- Residency -->
+        <div class="card" data-site="residency">
+            <img src="images/m_activities_lucknow_british_residency_l_324_576.webp" alt="Residency and complex">
+            <div class="card-content">
+                <h3>⚔️ Residency</h3>
+                <p>1857 Revolution Battlefield & Museum</p>
+                <button class="explore-btn">Explore Heritage →</button>
+            </div>
+        </div>
+
+        <!-- Hanuman Setu -->
+        <div class="card" data-site="hanuman-setu">
+            <img src="images/hanuman setu.webp" alt="Hanuman Setu Temple">
+            <div class="card-content">
+                <h3>🕉️ Hanuman Setu</h3>
+                <p>Iconic riverside Hanuman temple near Gomti River</p>
+                <button class="explore-btn">Explore Heritage →</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="modal-body">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const heritageData = {
+            "bara-imambara": {
+                title: "🏛️ Bara Imambara",
+                story: "Built by Nawab Asaf-ud-Daula in 1784 during a famine relief project. Features the world's largest unsupported hall (50m long, 15m high) and the famous Bhool Bhulaiya labyrinth with 1024 passages. An architectural marvel representing Nawabi engineering genius.",
+                impact: "Digital AR tours and 360° virtual walkthroughs make this heritage accessible globally. AI-powered guides explain the famine relief employment scheme behind its construction, connecting 18th-century social innovation to modern technology solutions.",
+                streetViewUrl: "https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d3560.892119253246!2d80.91269499999999!3d26.868935!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1706006400000"
+            },
+            "chota-imambara": {
+                title: "✨ Chota Imambara",
+                story: "Built in 1838 by Muhammad Ali Shah, known as 'Palace of Lights'. Features stunning Persian architecture, Belgian chandeliers, and life-size tazia replicas used in Muharram processions. Symbol of Shia Muslim heritage and Nawabi opulence.",
+                impact: "Virtual reality recreates historical Muharram processions. Mobile apps with multilingual audio guides preserve Shia traditions digitally, making Lucknow's unique cultural practices accessible to global audiences 24/7.",
+                streetViewUrl: "https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d3560.726485405557!2d80.90469729999999!3d26.8743042!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1706006400000"
+            },
+            "residency": {
+                title: "⚔️ Residency",
+                story: "British Residency where the first battle of 1857 Indian Revolution occurred. Bullet marks from the 90-day siege are still visible. Now a museum showcasing artifacts from the freedom struggle era.",
+                impact: "Interactive timelines, gamified history quizzes, and augmented reality battle recreations educate youth. Digital preservation ensures future generations understand India's independence struggle through immersive technology.",
+                streetViewUrl: "https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d3561.032589742186!2d80.92681849999999!3d26.8604362!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1706006400000"
+            },
+            "hanuman-setu": {
+                title: "🕉️ Hanuman Setu",
+                story: "Hanuman Setu Temple, also known as Sankat Mochan Hanuman Setu, is a major shrine on the banks of the Gomti River in Lucknow. The temple was established in the late 1960s by the revered saint Neem Karoli Baba and is now one of the city's most visited spiritual landmarks.",
+                impact: "Digital darshan, live aarti streams, and online seva options allow devotees to connect with Hanuman Setu from anywhere. These tools help preserve faith traditions while supporting the temple's social and charitable activities in the modern era.",
+                streetViewUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3561.019750932468!2d80.94135!3d26.86016!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x399bfd3f5b9c1c5f%3A0x6f3b6d5f8f4f6d8c!2sHanuman%20Setu%20Mandir!5e0!3m2!1sen!2sin!4v1706006400001"
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const site = this.dataset.site;
+                    const data = heritageData[site];
+                    document.getElementById('modal-body').innerHTML = `
+                        <h2>${data.title}</h2>
+                        <div class="story">
+                            <strong>🌟 Heritage Story:</strong><br><br>
+                            ${data.story}
+                        </div>
+                        <div class="impact">
+                            <strong>🔗 Virasat Se Vikas Connection:</strong><br><br>
+                            ${data.impact}
+                        </div>
+                        <div class="streetview-container">
+                            <div class="streetview-label">🗺️ Street View - Live Virtual Tour</div>
+                            <iframe class="streetview-iframe" src="${data.streetViewUrl}" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        </div>
+                    `;
+                    document.getElementById('modal').style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+            
+            document.querySelector('.close').addEventListener('click', closeModal);
+            
+            window.onclick = function(event) {
+                const modal = document.getElementById('modal');
+                if (event.target == modal) closeModal();
+            }
+            
+            function closeModal() {
+                document.getElementById('modal').style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+            
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeModal();
+            });
+        });
+    </script>
+</body>
+</html>
+```
